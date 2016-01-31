@@ -12,7 +12,8 @@ Package.describe({
 
 Package.onUse(function(api) {
   api.versionsFrom('1.2.1');
-  api.use(['ecmascript', 'accounts-password', 'check']);
+  api.use(['meteor', 'ecmascript', 'accounts-password', 'check']);
+  api.use(['aldeed:simple-schema'])
   api.addFiles('accounts-server.js', 'server');
 });
 

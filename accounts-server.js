@@ -1,3 +1,22 @@
+/**
+ * User settings
+ *
+ */
+Accounts.validateNewUser((user) => {
+ new SimpleSchema({
+   _id: { type: String, regEx: SimpleSchema.RegEx.Id },
+   emails: { type: Array },
+   'emails.$': { type: Object },
+   'emails.$.address': { type: String },
+   'emails.$.verified': { type: Boolean },
+   createdAt: { type: Date },
+   services: { type: Object, blackbox: true }
+ }).validate(user);
+
+ // Return true to allow user creation to proceed
+ return true;
+});
+
 Meteor.methods({
   /**
    * Methods for handling account functionality
