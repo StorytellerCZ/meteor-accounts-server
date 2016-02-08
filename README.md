@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/StorytellerCZ/meteor-accounts-server.png?label=ready&title=Ready)](https://waffle.io/StorytellerCZ/meteor-accounts-server)
 Server functionality to `storyteller:accounts-react-materialize`
 
 NOT FOR PRODUCTION
