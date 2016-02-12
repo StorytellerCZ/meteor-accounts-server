@@ -14,17 +14,24 @@ Accounts.validateNewUser((user) => {
        type:Date,
        autoValue:function() {
            if(this.isInsert || !this.isFromTrustedCode){
-               return new Date();
+               return new Date()
            }
        },
        denyUpdate:true
    },
    services: { type: Object, blackbox: true }
- }).validate(user);
+ }).validate(user)
 
  // Return true to allow user creation to proceed
- return true;
-});
+ return true
+})
+
+/**
+ * Assign basic roles
+ */
+Meteor.users.after.insert((userId, document)=>{
+  Roles.addUsersToRoles(document._id, 'user', Roles.GLOBAL_GROUP)
+})
 
 Meteor.methods({
   /**
@@ -45,14 +52,14 @@ Meteor.methods({
   },
   accountVerifyEmailSend:function(email){
     check(email, String)
-    return Accounts.sendVerificationEmail(Meteor.userId(), email);
+    return Accounts.sendVerificationEmail(Meteor.userId(), email)
   },
   accountSendResetPassword:function(email){
     check(email, String)
     let user = Accounts.findUserByEmail(email)
 
     if(user !== null){
-      return Accounts.sendResetPasswordEmail(user._id);
+      return Accounts.sendResetPasswordEmail(user._id)
     } else {
       return false
     }
@@ -68,7 +75,7 @@ Accounts.emailTemplates.from = "Webmaster <no-reply@example.com>"
 
 
 Accounts.emailTemplates.enrollAccount.subject = function (user) {
-   return "Welcome to Awesome Town, " + user.profile.name;
+   return "Welcome to Awesome Town, " + user.username
 }
 Accounts.emailTemplates.enrollAccount.text = function (user, url) {
   return "You have been selected to participate in building a better future!"

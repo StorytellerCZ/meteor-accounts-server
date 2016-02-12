@@ -1,6 +1,12 @@
+[![Code Climate](https://codeclimate.com/github/StorytellerCZ/meteor-accounts-server/badges/gpa.svg)](https://codeclimate.com/github/StorytellerCZ/meteor-accounts-server)[![Test Coverage](https://codeclimate.com/github/StorytellerCZ/meteor-accounts-server/badges/coverage.svg)](https://codeclimate.com/github/StorytellerCZ/meteor-accounts-server/coverage)[![Issue Count](https://codeclimate.com/github/StorytellerCZ/meteor-accounts-server/badges/issue_count.svg)](https://codeclimate.com/github/StorytellerCZ/meteor-accounts-server)
+
 Server functionality to `storyteller:accounts-react-materialize`
 
 NOT FOR PRODUCTION
+
+Roles
+====
+This package uses `alanning:roles` and automatically adds newly registered users to the `user` group.
 
 Methods:
 ====
