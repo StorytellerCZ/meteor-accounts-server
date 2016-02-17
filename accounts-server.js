@@ -5,19 +5,19 @@
 Accounts.validateNewUser((user) => {
  new SimpleSchema({
    _id: { type: String, regEx: SimpleSchema.RegEx.Id },
-   username: {type: String},
+   username: {type: String, index: true, unique: true},
    emails: { type: Array },
    'emails.$': { type: Object },
-   'emails.$.address': { type: String },
+   'emails.$.address': { type: String, regEx: SimpleSchema.RegEx.Email },
    'emails.$.verified': { type: Boolean },
    createdAt:{
-       type:Date,
-       autoValue:function() {
+       type: Date,
+       autoValue: function(){
            if(this.isInsert || !this.isFromTrustedCode){
                return new Date()
            }
        },
-       denyUpdate:true
+       denyUpdate: true
    },
    services: { type: Object, blackbox: true }
  }).validate(user)
