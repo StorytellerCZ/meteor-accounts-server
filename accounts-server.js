@@ -80,7 +80,18 @@ Meteor.methods({
       return false
     }
   }
-});
+})
+
+/**
+ * URLs for links send in emails
+ */
+Accounts.urls.resetPassword = (token) => {
+  return Meteor.absoluteUrl('user/reset-password/$token={token}')
+}
+
+Accounts.urls.verifyEmail = function (token) {
+   return Meteor.absoluteUrl('user/verify-email/$token={token}')
+}
 
 /**
  * Accounts e-mail templates
@@ -100,10 +111,6 @@ Accounts.emailTemplates.enrollAccount.text = function (user, url) {
 }
 Accounts.emailTemplates.resetPassword.subject = function (user) {}
 Accounts.emailTemplates.resetPassword.html = function (user, url) {}
-
-Accounts.urls.verifyEmail = function (token) {
-   return Meteor.absoluteUrl('user/verify-email/'+token);
-}
 
 Accounts.emailTemplates.verifyEmail.subject = function (user) {
   return "SITENAME e-mail verification"
