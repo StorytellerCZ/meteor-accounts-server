@@ -1,6 +1,6 @@
 Package.describe({
   name: 'storyteller:accounts-server',
-  version: '0.1.3',
+  version: '0.1.4',
   // Brief, one-line summary of the package.
   summary: 'Server side package for storyteller:accounts-react-materialize for username and e-mail operations.',
   // URL to the Git repository containing the source code for this package.
