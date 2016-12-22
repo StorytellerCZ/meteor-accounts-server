@@ -1,120 +1,117 @@
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
+import { SimpleSchema } from 'meteor/aldeed:simple-schema';
+import { Roles } from 'meteor/alanning:roles';
+
 /**
  * User settings schema
  *
  */
-Accounts.validateNewUser((user) => {
- new SimpleSchema({
-   _id: { type: String, regEx: SimpleSchema.RegEx.Id },
-   username: {type: String, index: true, unique: true},
-   emails: { type: Array },
-   'emails.$': { type: Object },
-   'emails.$.address': { type: String, regEx: SimpleSchema.RegEx.Email },
-   'emails.$.verified': { type: Boolean },
-   createdAt:{
-       type: Date,
-       autoValue: function(){
-           if(this.isInsert || !this.isFromTrustedCode){
-               return new Date()
-           }
-       },
-       denyUpdate: true
-   },
-   services: { type: Object, blackbox: true }
- }).validate(user)
+export function accountsConfig() {
+  Accounts.validateNewUser((user) => {
+    new SimpleSchema({
+      _id: { type: String, regEx: SimpleSchema.RegEx.Id },
+      username: { type: String, index: true, unique: true },
+      emails: { type: Array },
+      'emails.$': { type: Object },
+      'emails.$.address': { type: String, regEx: SimpleSchema.RegEx.Email },
+      'emails.$.verified': { type: Boolean },
+      profile: { type: Object, blackbox: true },
+      createdAt: {
+        type: Date,
+        autoValue() {
+          if (this.isInsert || !this.isFromTrustedCode) {
+            return new Date();
+          }
+        },
+        denyUpdate: true,
+      },
+      services: { type: Object, blackbox: true },
+    }).validate(user);
 
- // Return true to allow user creation to proceed
- return true
-})
+    // Return true to allow user creation to proceed
+    return true;
+  });
 
+  /**
+   * Assign basic role
+   */
+  Meteor.users.after.insert((userId, document) => {
+    Roles.addUsersToRoles(document._id, 'user', Roles.GLOBAL_GROUP);
+    // send verification e-mail
+    Accounts.sendVerificationEmail(document._id);
+  });
+
+  // deny updates via non-trusted (client) code
+  Meteor.users.deny({
+    update() { return true; }
+  });
+}
 /**
- * Assign basic roles
+ * ################################################################################################
+ * Methods
  */
-Meteor.users.after.insert((userId, document)=>{
-  Roles.addUsersToRoles(document._id, 'user', Roles.GLOBAL_GROUP)
-})
+export function accountsMethods() {
+  Meteor.methods({
+    /**
+     * Change username for current logged in user
+     * @param {string} newUsername
+     */
+    'accounts.username'(newUsername) {
+      check(newUsername, String);
+      return Accounts.setUsername(this.userId, newUsername);
+    },
+    /**
+     * Associate a new e-mail with the user
+     * @param {string} newEmail
+     */
+    'accounts.email.add'(newEmail) {
+      check(newEmail, String);
+      return Accounts.addEmail(this.userId, newEmail);
+    },
+    /**
+     * Remove the given e-mail from the user
+     * @param {string} email
+     */
+    'accounts.email.remove'(email) {
+      check(email, String);
+      // double check that there will be an e-mail left if we remove
+      const user = Meteor.users.find({ 'emails.address': email }).fetch();
+      if (user[0].emails.length < 2) {
+        throw new Meteor.Error('last-email', 'You can\'t delete your last e-mail.');
+      } else {
+        return Accounts.removeEmail(this.userId, email);
+      }
+    },
+    /**
+     * Sends a verification e-mail to the given e-mail
+     * @param {string} email
+     */
+    'accounts.email.verify.send'(email) {
+      check(email, String);
+      return Meteor.defer(() => {
+        return Accounts.sendVerificationEmail(this.userId, email);
+      });
+    },
+    /**
+     * Send a reset password link to the given email.
+     * @param {string} email
+     */
+    'accounts.password.reset.email.send'(email) {
+      check(email, String);
+      let user = Accounts.findUserByEmail(email);
 
-Meteor.methods({
-  /**
-   * Change username for current logged in user
-   * @param {string} newUsername
-   */
-  accountChangeUsername:function(newUsername){
-    check(newUsername, String)
-    return Accounts.setUsername(Meteor.userId(), newUsername)
-  },
-  /**
-   * Associate a new e-mail with the user
-   * @param {string} newEmail
-   */
-  accountAddEmail:function(newEmail){
-    check(newEmail, String)
-    return Accounts.addEmail(Meteor.userId(), newEmail)
-  },
-  /**
-   * Remove the given e-mail from the user
-   * @param {string} email
-   */
-  accountRemoveEmail:function(email){
-    check(email, String)
-    return Accounts.removeEmail(Meteor.userId(), email)
-  },
-  /**
-   * Sends a verification e-mail to the given e-mail
-   * @param {string} email
-   */
-  accountVerifyEmailSend:function(email){
-    check(email, String)
-    return Accounts.sendVerificationEmail(Meteor.userId(), email)
-  },
-  /**
-   * Send a reset password link to the given email.
-   * @param {string} email
-   */
-  accountSendResetPassword:function(email){
-    check(email, String)
-    let user = Accounts.findUserByEmail(email)
+      user = user._id;
 
-    if(user !== null){
-      return Accounts.sendResetPasswordEmail(user._id)
-    } else {
-      return false
-    }
-  }
-})
+      check(user, String);
 
-/**
- * URLs for links send in emails
- */
-Accounts.urls.resetPassword = (token) => {
-  return Meteor.absoluteUrl('user/reset-password/$token={token}')
-}
-
-Accounts.urls.verifyEmail = function (token) {
-   return Meteor.absoluteUrl('user/verify-email/$token={token}')
-}
-
-/**
- * Accounts e-mail templates
- * TODO
- */
-Accounts.emailTemplates.siteName = "SITENAME"
-Accounts.emailTemplates.from = "Webmaster <no-reply@example.com>"
-
-
-Accounts.emailTemplates.enrollAccount.subject = function (user) {
-   return "Welcome to Awesome Town, " + user.username
-}
-Accounts.emailTemplates.enrollAccount.text = function (user, url) {
-  return "You have been selected to participate in building a better future!"
-    + " To activate your account, simply click the link below:\n\n"
-    + url;
-}
-Accounts.emailTemplates.resetPassword.subject = function (user) {}
-Accounts.emailTemplates.resetPassword.html = function (user, url) {}
-
-Accounts.emailTemplates.verifyEmail.subject = function (user) {
-  return "SITENAME e-mail verification"
-}
-Accounts.emailTemplates.verifyEmail.html = function (user, url) {
-  return
+      if (user !== null) {
+        return Meteor.defer(() => {
+          return Accounts.sendResetPasswordEmail(user, email);
+        });
+      } else {
+        return false;
+      }
+    },
+  });
 }

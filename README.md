@@ -1,37 +1,62 @@
-[![Code Climate](https://codeclimate.com/github/StorytellerCZ/meteor-accounts-server/badges/gpa.svg)](https://codeclimate.com/github/StorytellerCZ/meteor-accounts-server)[![Test Coverage](https://codeclimate.com/github/StorytellerCZ/meteor-accounts-server/badges/coverage.svg)](https://codeclimate.com/github/StorytellerCZ/meteor-accounts-server/coverage)[![Issue Count](https://codeclimate.com/github/StorytellerCZ/meteor-accounts-server/badges/issue_count.svg)](https://codeclimate.com/github/StorytellerCZ/meteor-accounts-server)[![Stories in Ready](https://badge.waffle.io/StorytellerCZ/meteor-accounts-server.png?label=ready&title=Ready)](https://waffle.io/StorytellerCZ/meteor-accounts-server)
+# accounts-server
 
-Server functionality to `storyteller:accounts-react-materialize`
+Basic schema and methods for accounts.
 
-NOT FOR PRODUCTION
+## How to use
 
-Roles
-====
+You import the package with all its parts on your server as follows:
+
+```javascript
+import { accountsConfig, accountsMethods } from 'meteor/storyteller:accounts-server';
+```
+
+You then call the functions at the appropriate places.
+
+### Settings
+
+`accountsConfig` establishes the schema for the user collection, security (can only change it from the server), sending validation e-mail after registration and adding the user to the basid user group (`user`).
+
+#### Roles
+
 This package uses `alanning:roles` and automatically adds newly registered users to the `user` group.
 
-Methods:
-====
-`accountChangeUsername`
-Accepts a new username
+### Methods
 
-`accountAddEmail`
-Accepts a new e-mail address to be added to the user profile
+Once you initialize methods from this package by calling the `accountsMethods();` on your server, you can call any of the following methods from the server via `Meteor.call();`.
 
-`accountRemoveEmail`
-Removes the inputed e-mail address from the user profile
+**NOTE:** Many of these methods require that you set your emails. Check out the [Meteor Guide](https://guide.meteor.com/accounts.html#email-flows) for how to do that together with setting up the entire flow around it.
 
-`accountVerifyEmailSend`
-Sends verification e-mail to the given address
+#### `accounts.username`
 
-`accountSendResetPassword`
-Sends reset password e-mail to the given e-mail address
-NOTE: Reset password flow is not yet implemented
+**Params:**
+* newUsername {string}
 
-TODO:
-====
-* More validation
-* Reset password process
-* E-mails
-* Ability to change defaults via a settings file
-* Tests
-* Handle third party logins
-* i18n
+Change username for current logged in user.
+
+#### `accounts.email.add`
+
+**Params:**
+* newEmail {string}
+
+Accepts a new e-mail address to be added to the currently logged in user account.
+
+#### `accounts.email.remove`
+
+**Params:**
+* newEmail {string}
+
+Removes the given e-mail address from the currently logged in user account.
+
+#### `accounts.email.verify.send`
+
+**Params:**
+* email {string}
+
+Sends verification e-mail to the given e-mail address.
+
+#### `accounts.password.reset.email.send`
+
+**Params:**
+* email {string}
+
+Sends reset password e-mail to the given e-mail address.

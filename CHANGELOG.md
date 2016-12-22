@@ -1,5 +1,25 @@
 # CHANGELOG
 
+## v0.2.0 - 2016/12/22
+
+### Breaking
+
+*   Methods have been renamed, see documentation.
+
+### Changes
+
+*   After user is registered a verification e-mail is send.
+
+### Updates
+
+*   Updated dependencies
+*   Updated to Meteor 1.4
+*   ES2015
+
+### Fixes
+
+*   Added security to prevent changes to the user document from client.
+
 ## v0.1.4 - 2016/3/14
 
 ### Fixes
@@ -12,7 +32,7 @@
 
 ## v0.1.3 - 2016/2/12
 
-###Added
+### Added
 
 *   Added `matb33:collection-hooks`
 *   Added `alanning:roles`
@@ -20,7 +40,7 @@
 
 ## v0.1.2 - 2016/2/07
 
-###Changes
+### Changes
 
 *   Added username to schema and improved createdAt
 
