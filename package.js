@@ -1,7 +1,7 @@
 Package.describe({
   name: 'storyteller:accounts-server',
   version: '0.2.0',
-  summary: 'Server side package for storyteller:accounts-react-materialize for username and e-mail operations.',
+  summary: 'Server side for methods and subscriptions for username and e-mail operations.',
   git: 'https://github.com/StorytellerCZ/meteor-accounts-server',
   documentation: 'README.md'
 });
