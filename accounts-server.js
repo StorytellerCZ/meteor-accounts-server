@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { Roles } from 'meteor/alanning:roles';
+import { check } from 'meteor/check';
 
 /**
  * User settings schema
@@ -39,12 +40,17 @@ export function accountsConfig() {
   Meteor.users.after.insert((userId, document) => {
     Roles.addUsersToRoles(document._id, 'user', Roles.GLOBAL_GROUP);
     // send verification e-mail
-    Accounts.sendVerificationEmail(document._id);
+    try {
+      Accounts.sendVerificationEmail(document._id);
+    } catch (error) {
+      throw new Meteor.Error(error);
+    }
   });
 
   // deny updates via non-trusted (client) code
   Meteor.users.deny({
-    update() { return true; }
+    update() { return true; },
+    remove() { return true; },
   });
 }
 /**

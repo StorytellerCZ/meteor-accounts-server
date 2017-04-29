@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## v0.2.1 - 2017/04/29
+
+### Updates
+
+*   Updated alanning:roles to v1.2.16
+*   Makes sure that check is imported
+
 ## v0.2.0 - 2016/12/22
 
 ### Breaking

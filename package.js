@@ -1,6 +1,6 @@
 Package.describe({
   name: 'storyteller:accounts-server',
-  version: '0.2.0',
+  version: '0.2.1',
   summary: 'Server side for methods and subscriptions for username and e-mail operations.',
   git: 'https://github.com/StorytellerCZ/meteor-accounts-server',
   documentation: 'README.md'
