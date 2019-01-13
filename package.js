@@ -12,16 +12,16 @@ Package.onUse(function(api) {
   api.use([
     'matb33:collection-hooks@0.8.4',
     'alanning:roles@1.2.16',
-    'aldeed:collection2-core@2.1.0',
-    'aldeed:schema-index@2.1.1',
-    'aldeed:schema-deny@2.0.1'
+    'aldeed:collection2@3.0.0',
+    'aldeed:schema-index@3.0.0',
+    'aldeed:schema-deny@3.0.0'
   ]);
   api.imply([
     'accounts-password',
     'check',
     'matb33:collection-hooks',
     'alanning:roles',
-    'aldeed:collection2-core',
+    'aldeed:collection2',
     'aldeed:schema-index',
     'aldeed:schema-deny'
   ]);

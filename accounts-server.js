@@ -4,6 +4,13 @@ import SimpleSchema from 'simpl-schema';
 import { Roles } from 'meteor/alanning:roles';
 import { check } from 'meteor/check';
 
+const getDataForService = (options, services) => {
+  if (services.facebook) return parseFacebookData(services.facebook);
+  if (services.github) return parseGithubData(options, services.github);
+  if (services.google) return parseGoogleData(services.google);
+  return null;
+};
+
 /**
  * User settings schema
  *
@@ -22,14 +29,14 @@ export function accountsConfig() {
       // optional here because the accounts-password package does its own validation.
       optional: true
     },
-    "emails.$": {
+    'emails.$': {
       type: Object
     },
-    "emails.$.address": {
+    'emails.$.address': {
       type: String,
       regEx: SimpleSchema.RegEx.Email
     },
-    "emails.$.verified": {
+    'emails.$.verified': {
       type: Boolean
     },
     createdAt: {
@@ -77,8 +84,12 @@ export function accountsConfig() {
 
   // deny updates via non-trusted (client) code
   Meteor.users.deny({
-    update() { return true; },
-    remove() { return true; },
+    update() {
+      return true;
+    },
+    remove() {
+      return true;
+    }
   });
 }
 /**
@@ -93,6 +104,12 @@ export function accountsMethods() {
      */
     'accounts.username'(newUsername) {
       check(newUsername, String);
+      if (Package['socialize:user-profile']) {
+        Package['socialize:user-profile'].ProfilesCollection.update(
+          { _id: this.userId },
+          { $set: { username: newUsername } }
+        );
+      }
       return Accounts.setUsername(this.userId, newUsername);
     },
     /**
@@ -112,7 +129,7 @@ export function accountsMethods() {
       // double check that there will be an e-mail left if we remove
       const user = Meteor.users.find({ 'emails.address': email }).fetch();
       if (user[0].emails.length < 2) {
-        throw new Meteor.Error('last-email', 'You can\'t delete your last e-mail.');
+        throw new Meteor.Error('last-email', "You can't delete your last e-mail.");
       } else {
         return Accounts.removeEmail(this.userId, email);
       }
@@ -146,6 +163,6 @@ export function accountsMethods() {
       } else {
         return false;
       }
-    },
+    }
   });
 }
